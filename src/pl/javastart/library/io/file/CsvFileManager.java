@@ -67,7 +67,7 @@ public class CsvFileManager implements FileManger{
     public void exportData(Library library) {
         Publication[] publications = library.getPublications();
         try(
-                var fw = new FileWriter(FILE_NAME,true);
+                var fw = new FileWriter(FILE_NAME);
                 var writer = new BufferedWriter(fw);
                 ) {
             for (Publication publication : publications) {
