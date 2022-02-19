@@ -1,16 +1,10 @@
 package pl.javastart.library.app;
-import pl.javastart.library.Exceptions.DataExportException;
-import pl.javastart.library.Exceptions.DataImportException;
-import pl.javastart.library.Exceptions.InvalidDataException;
-import pl.javastart.library.Exceptions.NoSuchOptionException;
+import pl.javastart.library.Exceptions.*;
 import pl.javastart.library.io.ConsolePrinter;
 import pl.javastart.library.io.DataReader;
 import pl.javastart.library.io.file.FileManagerBuilder;
 import pl.javastart.library.io.file.FileManger;
-import pl.javastart.library.model.Library;
-import pl.javastart.library.model.Book;
-import pl.javastart.library.model.Magazine;
-import pl.javastart.library.model.Publication;
+import pl.javastart.library.model.*;
 import pl.javastart.library.model.comparator.AlphabeticalComparator;
 
 import java.util.Arrays;
@@ -52,6 +46,8 @@ public class LibraryControl {
                 case PRINT_MAGAZINE -> printMagzine();
                 case DELETE_BOOK -> deleteBook();
                 case DELETE_MAGAZINE -> deleteMagazine();
+                case ADD_USER -> addUser();
+                case PRINT_USER -> printUsers();
                 case EXIT -> exit();
                 default -> printer.printLine("Nie ma takiej opcji, wybierz ponownie opcję");
             }
@@ -86,8 +82,7 @@ public class LibraryControl {
     }
 
     private void printBooks() {
-        Publication[] publications = getSortedPublications(library);
-        printer.printbooks(publications);
+        printer.printbooks(library.getPublications().values());
     }
 
     private void addBook() {
@@ -98,19 +93,16 @@ public class LibraryControl {
             printer.printLine("Ne udało ię utworzyć książki, niepoprawne dane.");
         } catch (ArrayIndexOutOfBoundsException e){
             printer.printLine("Osiągnięto limit pojemności, nie można dodać kolejnej książki.");
+        } catch (PublicationAlreadyExistException e){
+            printer.printLine(e.getMessage());
         }
     }
 
     private void printMagzine() {
-        Publication[] publications = getSortedPublications(library);
-        printer.printMagazine(publications);
+        printer.printMagazine(library.getPublications().values());
     }
 
-    private Publication[] getSortedPublications(Library library) {
-        Publication[] publications = library.getPublications();
-        Arrays.sort(publications, new AlphabeticalComparator());
-        return publications;
-    }
+
 
     private void addMagazine() {
         try {
@@ -120,7 +112,22 @@ public class LibraryControl {
         printer.printLine("Ne udało ię utworzyć magazynu, niepoprawne dane.");
     } catch (ArrayIndexOutOfBoundsException e){
         printer.printLine("Osiągnięto limit pojemności, nie można dodać kolejnego magazynu.");
+    }catch (PublicationAlreadyExistException e){
+            printer.printLine(e.getMessage());
+        }
     }
+
+    private void addUser() {
+        LibraryUser libraryUser = dataReader.createLibraryUser();
+        try {
+            library.addUser(libraryUser);
+        } catch (UserAlreadyExistException e) {
+            printer.printLine(e.getMessage());
+        }
+    }
+
+    private void printUsers() {
+        printer.printUsers(library.getUsers().values());
     }
 
     private void deleteMagazine() {
@@ -162,7 +169,9 @@ public class LibraryControl {
         PRINT_BOOK(3, "wyświetl dostępne ksiązki"),
         PRINT_MAGAZINE(4, "wyświetl dostępne magazyny"),
         DELETE_BOOK(5,"usuń książkę"),
-        DELETE_MAGAZINE(6,"usuń magazyn");
+        DELETE_MAGAZINE(6,"usuń magazyn"),
+        ADD_USER(7,"Dodaj czytelnia"),
+        PRINT_USER(8,"Wyświetl wszystich czytelników");
 
         private final int value;
         private final String description;
