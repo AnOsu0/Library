@@ -41,7 +41,7 @@ public class Book extends Publication{
     }
 
     @Override
-    public String toCSV() {
+    public String toCsv() {
         return TYPE + ";" + getTitle() + ";" + getPublisher() + ";" + getYear() + ";"
                 + author + ";" + pages + ";" + isbn;
     }

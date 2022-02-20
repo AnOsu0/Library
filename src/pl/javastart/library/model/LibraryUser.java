@@ -12,7 +12,7 @@ public class LibraryUser extends User{
     }
 
     @Override
-    public String toCSV() {
+    public String toCsv() {
         return getFirstName() + ";" + getLastName() + ";" + getPesel();
     }
 

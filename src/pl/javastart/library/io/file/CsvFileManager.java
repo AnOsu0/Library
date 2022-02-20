@@ -9,7 +9,7 @@ import java.io.*;
 import java.util.Collection;
 import java.util.Scanner;
 
-public class CsvFileManager implements FileManger{
+public class CsvFileManager implements FileManger {
     private static final String PUBLICATIONS_FILE_NAME = "Library.csv";
     private static final String USERS_FILE_NAME = "Library_users.csv";
 
@@ -27,38 +27,12 @@ public class CsvFileManager implements FileManger{
         return library;
     }
 
-    private void exportPublications(Library library) {
-        Collection<Publication> publications = library.getPublications().values();
-        try (FileWriter fileWriter = new FileWriter(PUBLICATIONS_FILE_NAME);
-             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
-            for (Publication publication : publications) {
-                bufferedWriter.write(publication.toCSV());
-                bufferedWriter.newLine();
-            }
-        } catch (IOException e) {
-            throw new DataExportException("Błąd zapisu danych do pliku " + PUBLICATIONS_FILE_NAME);
-        }
-    }
-
-    private void exportUsers(Library library) {
-        Collection<LibraryUser> users = library.getUsers().values();
-        try (FileWriter fileWriter = new FileWriter(USERS_FILE_NAME);
-             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
-            for (LibraryUser libUser : users) {
-                bufferedWriter.write(libUser.toCSV());
-                bufferedWriter.newLine();
-            }
-        } catch (IOException e) {
-            throw new DataExportException("Błąd zapisu danych do pliku " + USERS_FILE_NAME);
-        }
-    }
-
     private Publication createObjectFromString(String csvText) {
         String[] split = csvText.split(";");
         String type = split[0];
-        if(Book.TYPE.equals(type)) {
+        if (Book.TYPE.equals(type)) {
             return createBook(split);
-        } else if(Magazine.TYPE.equals(type)) {
+        } else if (Magazine.TYPE.equals(type)) {
             return createMagazine(split);
         }
         throw new InvalidDataException("Nieznany typ publikacji: " + type);
@@ -114,6 +88,28 @@ public class CsvFileManager implements FileManger{
         String lastName = split[1];
         String pesel = split[2];
         return new LibraryUser(firstName, lastName, pesel);
+    }
+
+    private void exportPublications(Library library) {
+        Collection<Publication> publications = library.getPublications().values();
+        exportToCsv(publications, PUBLICATIONS_FILE_NAME);
+    }
+
+    private void exportUsers(Library library) {
+        Collection<LibraryUser> users = library.getUsers().values();
+        exportToCsv(users, USERS_FILE_NAME);
+    }
+
+    private <T extends CsvConvertible> void exportToCsv(Collection<T> collection, String fileName) {
+        try (FileWriter fileWriter = new FileWriter(fileName);
+             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+            for (T element : collection) {
+                bufferedWriter.write(element.toCsv());
+                bufferedWriter.newLine();
+            }
+        } catch (IOException e) {
+            throw new DataExportException("Błąd zapisu danych do pliku " + fileName);
+        }
     }
 }
 
