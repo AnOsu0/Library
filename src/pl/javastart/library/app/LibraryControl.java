@@ -82,7 +82,10 @@ public class LibraryControl {
     }
 
     private void printBooks() {
-        printer.printbooks(library.getSortedPublications(new AlphabeticalTitleComparator()));
+        printer.printbooks
+                (library.getSortedPublications(
+                        (p1, p2) -> p1.getTitle().compareToIgnoreCase(p2.getTitle()
+                )));
     }
 
     private void addBook() {
@@ -99,7 +102,9 @@ public class LibraryControl {
     }
 
     private void printMagzine() {
-        printer.printMagazine(library.getSortedPublications(new AlphabeticalTitleComparator()));
+        printer.printMagazine(library.getSortedPublications(
+                (p1, p2) -> p1.getTitle().compareToIgnoreCase(p2.getTitle())
+        ));
     }
 
 
@@ -127,12 +132,10 @@ public class LibraryControl {
     }
 
     private void printUsers() {
-        printer.printUsers(library.getSortedUsers(new Comparator<LibraryUser>() {
-            @Override
-            public int compare(LibraryUser u1, LibraryUser u2) {
-                return u1.getLastName().compareTo(u2.getLastName());
-            }
-        }));
+        printer.printUsers(library.getSortedUsers(
+                (u1, u2) -> u1.getLastName().compareTo(u2.getLastName())
+        )
+        );
     }
 
     private void deleteMagazine() {
